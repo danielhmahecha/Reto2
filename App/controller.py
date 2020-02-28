@@ -57,8 +57,8 @@ def loadMovies (catalog, sep=';'):
     Carga las películas del archivo. 
     """
     t1_start = process_time() #tiempo inicial
-    #moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
-    moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
+    moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
+    #moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(moviesfile, encoding="utf-8-sig") as csvfile:
@@ -79,8 +79,8 @@ def loadDirectors (catalog, sep=';'):
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    #castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
-    castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
+    castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    #castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(castingfile, encoding="utf-8-sig") as csvfile:
@@ -89,10 +89,31 @@ def loadDirectors (catalog, sep=';'):
             # Se adiciona el director al mapa  de directores
             model.addDirector(catalog, row)
             model.addId_Director(catalog, row)
+            model.addActor(catalog, row)
+
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución carga directores y actores:",t1_stop-t1_start," segundos")   
+
+def loadActors (catalog, sep=';'):
+    """
+    Carga los libros del archivo.  Por cada libro se toman sus autores y por 
+    cada uno de ellos, se crea en la lista de autores, a dicho autor y una
+    referencia al libro que se esta procesando.
+    """
+    t1_start = process_time() #tiempo inicial
+    #castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
+    dialect = csv.excel()
+    dialect.delimiter=sep
+    with open(castingfile, encoding="utf-8-sig") as csvfile:
+        spamreader = csv.DictReader(csvfile, dialect=dialect)
+        for row in spamreader: 
+            # Se adiciona el director al mapa  de directores
+            model.addActor(catalog, row)
+           
           
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución carga directores:",t1_stop-t1_start," segundos")   
-
+    print("Tiempo de ejecución carga actores:",t1_stop-t1_start," segundos")   
 
 def initCatalog ():
     """
@@ -110,7 +131,7 @@ def loadData (catalog):
     """
     loadMovies(catalog)
     loadDirectors(catalog)
-    
+    #loadActors(catalog)
 
 # Funciones llamadas desde la vista y enviadas al modelo
 
@@ -158,6 +179,30 @@ def getMoviesByDirector(catalog, name, minavg):
     print("\nTiempo de ejecución buscar buenas peliculas por Director:",t1_stop-t1_start," segundos\n")
 
     return movies
+
+def getDataByDirector(catalog, name):
+    t1_start = process_time() #tiempo inicial 
+    movies = getMoviesByDirector(catalog,name,0)
+    iterator = it.newIterator(movies)
+    count = lt.size(movies)
+    sum=0
+    while it.hasNext(iterator):
+        movie = it.next(iterator)
+        sum += float(movie['vote_average'])
+    
+    if (sum!=0):
+        avg = round(sum/count,2)
+    else:
+        avg=0
+    data = lt.newList()
+    lt.addLast(data,count)
+    lt.addLast(data,avg)
+    lt.addLast(data,movies)
+
+    t1_stop = process_time() #tiempo final
+    print("\nTiempo de ejecución buscar peliculas del Director:",t1_stop-t1_start," segundos\n")
+    
+    return data
 
 def getMovieInfo(catalog, id):
     t1_start = process_time() #tiempo inicial

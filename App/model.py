@@ -41,10 +41,11 @@ def newCatalog():
    
     catalog = {'moviesList':None, 'directors':None, 'moviesMap': None}
     catalog['moviesList'] = lt.newList("ARRAY_LIST")
-    #catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
-    #catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
-    catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
-    catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
+    catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
+    catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
+   # catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
+    #catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
+    catalog['actors'] = map.newMap (2417, maptype='CHAINING') #4833 actors small-file
     catalog['titlesMap'] = map.newMap (658111, maptype='PROBING') 
     catalog['id_directorMap'] = map.newMap (658111, maptype= 'PROBING')
     return catalog
@@ -96,6 +97,53 @@ def newDirector (row):
     director ['directorMovies'] = lt.newList('SINGLE_LINKED')
     lt.addLast(director['directorMovies'],row['id'])
     return director
+
+def newActor (row, actnumber):
+    
+    actor = {'name': "", "actorMovies":None}
+    actor ['name'] = row[actnumber]
+    actor['actorMovies'] = lt.newList()
+    lt.addLast(actor['actorMovies'],row['id'])
+    return actor
+
+def addActor (catalog,row):
+    actors = catalog['actors']
+
+    actor1=map.get(actors, row['actor1_name'], compareByKey)
+    if actor1:
+        lt.addLast(actor1['actorMovies'],row['id'])
+    else:
+        actor1 = newActor(row,'actor1_name')
+        map.put(actors,actor1['name'],actor1,compareByKey)
+
+    actor2=map.get(actors, row['actor2_name'], compareByKey)
+    if actor2:
+        lt.addLast(actor2['actorMovies'],row['id'])
+    else:
+        actor2 = newActor(row,'actor2_name')
+        map.put(actors,actor2['name'],actor2,compareByKey)
+    
+    actor3=map.get(actors, row['actor3_name'], compareByKey)
+    if actor3:
+        lt.addLast(actor3['actorMovies'],row['id'])
+    else:
+        actor3 = newActor(row,'actor3_name')
+        map.put(actors,actor3['name'],actor3,compareByKey)
+
+    actor4=map.get(actors, row['actor4_name'], compareByKey)
+    if actor4:
+        lt.addLast(actor4['actorMovies'],row['id'])
+    else:
+        actor4 = newActor(row,'actor4_name')
+        map.put(actors,actor4['name'],actor4,compareByKey)
+
+    actor5=map.get(actors, row['actor5_name'], compareByKey)
+    if actor5:
+        lt.addLast(actor5['actorMovies'],row['id'])
+    else:
+        actor5 = newActor(row,'actor5_name')
+        map.put(actors,actor1['name'],actor5,compareByKey)
+
 
 def addDirector (catalog, row):
     """

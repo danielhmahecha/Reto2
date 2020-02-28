@@ -41,6 +41,7 @@ def printMenu():
     print("1- Cargar información")
     print("2- Buscar buenas películas por director")
     print("3")
+    print("4")
     print("0- Salir")
 
 
@@ -71,6 +72,18 @@ def printBestMoviesDirector (movies, criteria):
         print ('No se encontraron peliculas')
     print ('\n')
 
+def printTitlesDirector (movies):
+    size = lt.size(movies)
+
+    if size:
+        print ('El director tiene las siguientes películas: ')
+        iterator = it.newIterator(movies)
+        while  it.hasNext(iterator):
+            movie = it.next(iterator)
+            print ('Titulo: ' + movie['title'] +  ' Rating: ' + movie['vote_average'] + ' (' + movie['vote_count'] + ' votos)')
+    else:
+        print ('No se encontraron peliculas')
+    print ('\n')
 """
 Menu principal
 """
@@ -84,6 +97,7 @@ while True:
         print ('Mapa Peliculas cargadas: ' + str(map.size(catalog['moviesMap'])))
         print ('Lista Peliculas cargadas: ' + str(lt.size(catalog['moviesList'])))
         print ('Directores cargados: ' + str(map.size(catalog['directors']))+"\n")
+        print ('Actores cargados: '+str(map.size(catalog['actors'])))
         print ('Mapa Titulos: ' + str(map.size(catalog['titlesMap'])))
         print ('Mapa Ids Directores: ' +  str(map.size(catalog['id_directorMap']))+"\n")
 
@@ -104,6 +118,17 @@ while True:
             print("Voto promedio: ",data['vote_average']," Votos totales: ", data['vote_count'], "Director: ", data['director'])
         else:
             print('Titulo no encontrado')
+
+    elif int(inputs[0])==4:
+        name = input('Ingrese el nombre del director a buscar: ')
+        data = controller.getDataByDirector(catalog,name)
+        count = lt.getElement(data,1)
+        avg = lt.getElement(data,2)
+        movies = lt.getElement(data,3)
+        print ("Número de películas dirigidas: ",str(count)," Promedio de votos en sus películas: ",str(avg),"\n")
+        printTitlesDirector(movies)
+
+
     else:
         sys.exit(0)
 sys.exit(0)
