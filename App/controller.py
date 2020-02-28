@@ -57,15 +57,15 @@ def loadMovies (catalog, sep=';'):
     Carga las películas del archivo. 
     """
     t1_start = process_time() #tiempo inicial
-    moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
-    #moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
+    #moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
+    moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(moviesfile, encoding="utf-8-sig") as csvfile:
         spamreader = csv.DictReader(csvfile, dialect=dialect)
         for row in spamreader: 
             # Se adiciona la pelicula a la lista de peliculas
-            model.addMovieList(catalog, row)
+            #model.addMovieList(catalog, row)
             # Se adiciona la pelicula al mapa de peliculas (key=title)
             model.addMovieMap(catalog, row)
             model.addTitlesMap(catalog, row)
@@ -79,8 +79,8 @@ def loadDirectors (catalog, sep=';'):
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
-    #castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
+    #castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(castingfile, encoding="utf-8-sig") as csvfile:
@@ -161,49 +161,105 @@ def getDirectorInfo (catalog, name):
 def getMoviesByDirector(catalog, name, minavg):
     t1_start = process_time() #tiempo inicial 
     director = getDirectorInfo (catalog, name)
-    ids = director['directorMovies']
-    movies = lt.newList('ARRAY_LIST')
-    iterator = it.newIterator(ids)
-    while  it.hasNext(iterator):
-        id = it.next(iterator)
-        movie = getMovieInfo (catalog, id)
-        if float(movie['vote_average']) >= minavg:
-            lt.addLast(movies,movie)
+    movies = None
+
+    if director: 
+        ids = director['directorMovies']
+        movies = lt.newList('ARRAY_LIST')
+        iterator = it.newIterator(ids)
+        while  it.hasNext(iterator):
+            id = it.next(iterator)
+            movie = getMovieInfo (catalog, id)
+            if float(movie['vote_average']) >= minavg:
+                lt.addLast(movies,movie)
             
-    # for id in ids:
-    #     movie = getMovieInfo (catalog, id)
-    #     if movie['vote_average'] >= minavg:
-    #         lt.addLast(movies,movie)
+ 
     
     t1_stop = process_time() #tiempo final
-    print("\nTiempo de ejecución buscar buenas peliculas por Director:",t1_stop-t1_start," segundos\n")
+    if (minavg>0):
+        print("\nTiempo de ejecución buscar buenas peliculas por Director:",t1_stop-t1_start," segundos\n")
 
     return movies
 
 def getDataByDirector(catalog, name):
     t1_start = process_time() #tiempo inicial 
     movies = getMoviesByDirector(catalog,name,0)
-    iterator = it.newIterator(movies)
-    count = lt.size(movies)
-    sum=0
-    while it.hasNext(iterator):
-        movie = it.next(iterator)
-        sum += float(movie['vote_average'])
-    
-    if (sum!=0):
-        avg = round(sum/count,2)
-    else:
+    data = None
+
+    if movies:
+        iterator = it.newIterator(movies)
+        count = lt.size(movies)
+        sum=0
         avg=0
-    data = lt.newList()
-    lt.addLast(data,count)
-    lt.addLast(data,avg)
-    lt.addLast(data,movies)
+        while it.hasNext(iterator):
+            movie = it.next(iterator)
+            sum += float(movie['vote_average'])
+        
+        if (sum > 0):
+            avg = round(sum/count,2)
+    
+        data = lt.newList()
+        lt.addLast(data,count)
+        lt.addLast(data,avg)
+        lt.addLast(data,movies)
 
     t1_stop = process_time() #tiempo final
     print("\nTiempo de ejecución buscar peliculas del Director:",t1_stop-t1_start," segundos\n")
     
     return data
 
+def getMoviesByActor(catalog,name):
+    t1_start = process_time()
+    data = None
+    actor = model.getActorInMap(catalog,name)
+    if actor:
+        ids = actor ['actorMovies']
+        movies = lt.newList()
+        count = lt.size(ids)
+        iterator = it.newIterator(ids)
+        sum=0
+        avg=0
+        while it.hasNext(iterator):
+            id = it.next(iterator)
+            movie = getMovieInfo(catalog, id)
+            lt.addLast(movies,movie)
+            sum += float(movie['vote_average'])
+
+        if sum>0:
+            avg = sum/count
+        
+        mayorDirector = principalDirector ( catalog, ids )
+
+        data = lt.newList()
+        lt.addLast(data, count)
+        lt.addLast(data, avg)
+        lt.addLast(data, mayorDirector)
+        lt.addLast(data, movies)
+    t1_stop = process_time()
+    print("Tiempo ejecución búsqueda por actor: ",str(t1_stop-t1_start)," segundos")
+    return data
+    
+def principalDirector (catalog, ids):
+    iterator = it.newIterator(ids)
+    dicc = {}
+    while it.hasNext(iterator):
+        id=it.next(iterator)  
+        director = model.getIdDirector(catalog, id)
+        if director in dicc:
+            dicc[director] += 1
+        else:
+            dicc[director] = 1
+   
+    count = 0
+    mayor = None
+    
+    for director in dicc:
+        if (dicc[director] > count):
+            count = dicc[director]
+            mayor = director
+
+    return mayor
+        
 def getMovieInfo(catalog, id):
     t1_start = process_time() #tiempo inicial
     #book=model.getBookInList(catalog, bookTitle)

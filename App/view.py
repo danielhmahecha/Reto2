@@ -37,11 +37,12 @@ operación solicitada
 
 
 def printMenu():
-    print("Bienvenido al Laboratorio 3")
+    print("Bienvenido al Reto 2")
     print("1- Cargar información")
     print("2- Buscar buenas películas por director")
-    print("3")
-    print("4")
+    print("3- Buscar película por título (Req. 2)")
+    print("4- Buscar información por director (Req. 3)")
+    print("5- Buscar información por actor (Req. 4)")
     print("0- Salir")
 
 
@@ -88,6 +89,7 @@ def printTitlesDirector (movies):
 Menu principal
 """
 while True:
+    
     printMenu()
     inputs =input('Seleccione una opción para continuar\n')
     if int(inputs[0])==1:
@@ -95,40 +97,79 @@ while True:
         catalog = initCatalog ()
         loadData (catalog)
         print ('Mapa Peliculas cargadas: ' + str(map.size(catalog['moviesMap'])))
-        print ('Lista Peliculas cargadas: ' + str(lt.size(catalog['moviesList'])))
-        print ('Directores cargados: ' + str(map.size(catalog['directors']))+"\n")
+        #print ('Lista Peliculas cargadas: ' + str(lt.size(catalog['moviesList'])))
+        print ('Directores cargados: ' + str(map.size(catalog['directors'])))
         print ('Actores cargados: '+str(map.size(catalog['actors'])))
         print ('Mapa Titulos: ' + str(map.size(catalog['titlesMap'])))
         print ('Mapa Ids Directores: ' +  str(map.size(catalog['id_directorMap']))+"\n")
 
     elif int(inputs[0])==2:
-        name = input("Nombre del director a buscar: ")
-        director = controller.getDirectorInfo (catalog, name)
-        if director:
-            print("Director  encontrado:",director['name'])
-            movies = controller.getMoviesByDirector(catalog, director['name'], 6)
-            printBestMoviesDirector (movies, 6)
-        else:
-            print("Director No encontrado") 
+        
+        try:
+            catalog
+            name = input("Nombre del director a buscar: ")
+            director = controller.getDirectorInfo (catalog, name)
+            if director:
+                print("Director  encontrado:",director['name'])
+                movies = controller.getMoviesByDirector(catalog, director['name'], 6)
+                printBestMoviesDirector (movies, 6)
+            else:
+                print("Director No encontrado") 
+            
+        except:
+            print("\n **ERROR: Cargue primero un archivo**\n")
+       
 
     elif int(inputs[0])==3:
-        title = input("Titulo de la pelicula: ")
-        data = controller.getDataTitle(catalog, title)
-        if data:
-            print("Voto promedio: ",data['vote_average']," Votos totales: ", data['vote_count'], "Director: ", data['director'])
-        else:
-            print('Titulo no encontrado')
+        try: 
+            catalog
+            title = input("Titulo de la pelicula: ")
+            data = controller.getDataTitle(catalog, title)
+            if data:
+                print("Voto promedio: ",data['vote_average']," Votos totales: ", data['vote_count'], "Director: ", data['director'],"\n")
+            else:
+                print('Titulo no encontrado\n')           
+           
+        except:
+            print("\n **ERROR: Cargue primero un archivo**\n")
+
 
     elif int(inputs[0])==4:
-        name = input('Ingrese el nombre del director a buscar: ')
-        data = controller.getDataByDirector(catalog,name)
-        count = lt.getElement(data,1)
-        avg = lt.getElement(data,2)
-        movies = lt.getElement(data,3)
-        print ("Número de películas dirigidas: ",str(count)," Promedio de votos en sus películas: ",str(avg),"\n")
-        printTitlesDirector(movies)
+        try:
+            catalog
+            name = input('Ingrese el nombre del director a buscar: ')
+            data = controller.getDataByDirector(catalog,name)
+            if data: 
+                print("Director  encontrado: ",name)
+                count = lt.getElement(data,1)
+                avg = lt.getElement(data,2)
+                movies = lt.getElement(data,3)
+                print ("Número de películas dirigidas: ",str(count)," Promedio de votos en sus películas: ",str(avg),"\n")
+                printTitlesDirector(movies)
+            else:
+                print("Director no encontrado\n")
+        except:
+            print("\n **ERROR: Cargue primero un archivo**\n")
 
-
+    elif int(inputs[0])==5:
+        try:
+            catalog
+            name= input('Ingresa el nombre del actor a buscar: ')
+            data = controller.getMoviesByActor(catalog, name)
+            if data:
+                print("Actor  encontrado: ",name)
+                count = lt.getElement(data,1)
+                avg = lt.getElement(data,2)
+                mayor = lt.getElement(data, 3)
+                movies = lt.getElement(data, 4)
+                print("\nTotal de películas en las que ha participado: ",str(count)," Promedio de votos en sus películas: ",str(round(avg,2))," Director que más lo ha dirigido: ",mayor,"\n")
+                printTitlesDirector(movies)
+            else:
+                print("Actor no encontrado\n")
+       
+        except:
+           print("\n **ERROR: Cargue primero un archivo**\n")
+    
     else:
         sys.exit(0)
 sys.exit(0)

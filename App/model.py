@@ -40,12 +40,14 @@ def newCatalog():
     """
    
     catalog = {'moviesList':None, 'directors':None, 'moviesMap': None}
-    catalog['moviesList'] = lt.newList("ARRAY_LIST")
-    catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
-    catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
-   # catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
-    #catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
-    catalog['actors'] = map.newMap (2417, maptype='CHAINING') #4833 actors small-file
+    #catalog['moviesList'] = lt.newList("ARRAY_LIST")
+    
+    #catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
+    #catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
+    catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
+    catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
+    #catalog['actors'] = map.newMap (2417, maptype='CHAINING') #4833 actors small-file
+    catalog['actors'] = map.newMap (111893, maptype='CHAINING') #223762 actors big-file
     catalog['titlesMap'] = map.newMap (658111, maptype='PROBING') 
     catalog['id_directorMap'] = map.newMap (658111, maptype= 'PROBING')
     return catalog
@@ -104,6 +106,7 @@ def newActor (row, actnumber):
     actor ['name'] = row[actnumber]
     actor['actorMovies'] = lt.newList()
     lt.addLast(actor['actorMovies'],row['id'])
+
     return actor
 
 def addActor (catalog,row):
@@ -112,6 +115,7 @@ def addActor (catalog,row):
     actor1=map.get(actors, row['actor1_name'], compareByKey)
     if actor1:
         lt.addLast(actor1['actorMovies'],row['id'])
+
     else:
         actor1 = newActor(row,'actor1_name')
         map.put(actors,actor1['name'],actor1,compareByKey)
@@ -167,6 +171,10 @@ def getDirectorInMap (catalog, name):
     Retorna el director  desde el mapa de directores a partir del nombre (key)
     """
     return map.get(catalog['directors'], name, compareByKey)
+
+def getActorInMap(catalog,name):
+    return map.get(catalog['actors'],name,compareByKey)
+    
 
 def getMovieInMap (catalog, id):
     """
