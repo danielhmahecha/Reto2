@@ -50,8 +50,29 @@ def newCatalog():
     catalog['actors'] = map.newMap (111893, maptype='CHAINING') #223762 actors big-file
     catalog['titlesMap'] = map.newMap (658111, maptype='PROBING') 
     catalog['id_directorMap'] = map.newMap (658111, maptype= 'PROBING')
+    catalog['genres'] = map.newMap(41, maptype='PROBING') #20 genres
     return catalog
 
+def addGenre (catalog, row):
+    genres = catalog['genres']
+    gen = ['Adventure','Crime','Animation','History','Action','TV Movie','War','Fantasy','Romance','Thriller','Music','Horror','Documentary','Science Fiction','Family','Comedy','Drama','Western','Mystery','Foreign']
+    for g in gen:
+        
+        if g in row['genres']:
+            genre = map.get(genres,g,compareByKey)
+            if genre:
+                lt.addLast(genre['genreMovies'],row['id'])
+            else:
+                newgenre = newGenre (g,row)
+                map.put(genres,newgenre['genre'],newgenre,compareByKey)
+
+def newGenre(g,row):
+    newgenre = {'genre':"", 'genreMovies':None}
+    newgenre['genre']=g
+    newgenre['genreMovies']=lt.newList()
+    lt.addLast(newgenre['genreMovies'],row['id'])
+    return newgenre
+    
 
 def newMovie(row):
 
@@ -187,6 +208,9 @@ def getMovieByTitle (catalog, title):
 
 def getIdDirector (catalog, id):
     return map.get(catalog['id_directorMap'], id, compareByKey)
+
+def getGenreInMap (catalog, genre):
+    return map.get(catalog['genres'],genre,compareByKey)
 
 # Funciones de comparacion
 

@@ -100,6 +100,7 @@ while True:
         #print ('Lista Peliculas cargadas: ' + str(lt.size(catalog['moviesList'])))
         print ('Directores cargados: ' + str(map.size(catalog['directors'])))
         print ('Actores cargados: '+str(map.size(catalog['actors'])))
+        print ('Generos cargados: '+str(map.size(catalog['genres'])))
         print ('Mapa Titulos: ' + str(map.size(catalog['titlesMap'])))
         print ('Mapa Ids Directores: ' +  str(map.size(catalog['id_directorMap']))+"\n")
 
