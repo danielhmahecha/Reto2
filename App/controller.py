@@ -253,20 +253,23 @@ def getMovieInfo(catalog, id):
         return None   
 
 def getMoviesbyGenre(catalog,genre):
+    t1_start = process_time()
     genre_ids = model.getGenreInMap(catalog,genre)
+    movies = genre_ids['genreMovies']
     count = 0
     sum = 0
-    iterator = it.newIterator(genre_ids)
+    iterator = it.newIterator(movies)
     while it.hasNext(iterator):
-        ID = it.next(iterator)
-        movie = getMovieInfo(catalog, ID)
+        mid = it.next(iterator)
+        movie = getMovieInfo(catalog, mid)
         count += 1
         sum += float(movie['vote_average'])
     data = lt.newList()
     average = round((sum/count),2)
     lt.addLast(data,average)
     lt.addLast(data,count)
-
+    t1_stop = process_time()
+    print ('Tiempo de ejecucion buscar género: ',t1_stop-t1_start," segundos")
     return data 
 
 
