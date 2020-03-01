@@ -57,8 +57,8 @@ def loadMovies (catalog, sep=';'):
     Carga las películas del archivo. 
     """
     t1_start = process_time() #tiempo inicial
-    #moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
-    moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
+    moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
+    #moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(moviesfile, encoding="utf-8-sig") as csvfile:
@@ -80,8 +80,8 @@ def loadDirectors (catalog, sep=';'):
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    #castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
-    castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
+    castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    #castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(castingfile, encoding="utf-8-sig") as csvfile:
@@ -113,7 +113,6 @@ def loadData (catalog):
     """
     loadMovies(catalog)
     loadDirectors(catalog)
-    #loadActors(catalog)
 
 # Funciones llamadas desde la vista y enviadas al modelo
 
@@ -253,10 +252,23 @@ def getMovieInfo(catalog, id):
     else:
         return None   
 
-def getAuthorInfo(catalog, authorName):
-    author=model.getAuthorInfo(catalog, authorName)
-    if author:
-        return author
-    else:
-        return None    
+def getMoviesbyGenre(catalog,genre):
+    genre_ids = model.getGenreInMap(catalog,genre)
+    count = 0
+    sum = 0
+    iterator = it.newIterator(genre_ids)
+    while it.hasNext(iterator):
+        ID = it.next(iterator)
+        movie = getMovieInfo(catalog, ID)
+        count += 1
+        sum += float(movie['vote_average'])
+    data = lt.newList()
+    average = round((sum/count),2)
+    lt.addLast(data,average)
+    lt.addLast(data,count)
+
+    return data 
+
+
+
 

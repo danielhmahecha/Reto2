@@ -43,6 +43,7 @@ def printMenu():
     print("3- Buscar película por título (Req. 2)")
     print("4- Buscar información por director (Req. 3)")
     print("5- Buscar información por actor (Req. 4)")
+    print("6- Buscar información por genero (Req. 5) ")
     print("0- Salir")
 
 
@@ -167,10 +168,21 @@ while True:
                 printTitlesDirector(movies)
             else:
                 print("Actor no encontrado\n")
-       
         except:
-           print("\n **ERROR: Cargue primero un archivo**\n")
-    
+            print("\n **ERROR: Cargue primero un archivo**\n")
+
+    elif int(inputs[0])==6:
+        genre = input("Genero de peliculas : ")
+        data = controller.getMoviesbyGenre(catalog,genre)
+        if data:
+            avg = lt.getElement(data,1)
+            count = lt.getElement(data,2)
+            print("Voto promedio: ",str(avg)," Votos totales: ", str(count),"\n")
+        else:
+            print('Titulo no encontrado\n') 
+
+          
+
     else:
         sys.exit(0)
 sys.exit(0)
