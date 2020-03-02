@@ -42,14 +42,22 @@ def newCatalog():
     catalog = {'moviesList':None, 'directors':None, 'moviesMap': None}
     #catalog['moviesList'] = lt.newList("ARRAY_LIST")
     
-    catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
-    catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
-    #catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
-    #catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
-    catalog['actors'] = map.newMap (2417, maptype='CHAINING') #4833 actors small-file
-    #catalog['actors'] = map.newMap (111893, maptype='CHAINING') #223762 actors big-file
-    catalog['titlesMap'] = map.newMap (658111, maptype='PROBING') 
-    catalog['id_directorMap'] = map.newMap (658111, maptype= 'PROBING')
+    #MAPAS PARA ARCHIVOS GRANDES:
+    catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
+    catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
+    catalog['actors'] = map.newMap (130439, maptype='CHAINING') #260862 actors big-file
+    catalog['titlesMap'] = map.newMap (164531, maptype='CHAINING') #329044 titles big-file
+    catalog['id_directorMap'] = map.newMap (164531, maptype= 'CHAINING') #329044 ids big-file
+    
+
+    #MAPAS PARA ARCHIVOS PEQUEÑOS:
+    #catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
+    #catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
+    #catalog['actors'] = map.newMap (2417, maptype='CHAINING') #4833 actors small-file
+    #catalog['titlesMap'] = map.newMap (4001, maptype='PROBING') #2000 titles small-file
+    #catalog['id_directorMap'] = map.newMap (4001, maptype= 'PROBING') #2000 ids small-file
+
+    #MAPA GENER0S (IGUAL PARA ARCHIVOS GRANDES Y PEQUEÑOS):
     catalog['genres'] = map.newMap(41, maptype='PROBING') #20 genres
     return catalog
 
@@ -167,12 +175,12 @@ def addActor (catalog,row):
         lt.addLast(actor5['actorMovies'],row['id'])
     else:
         actor5 = newActor(row,'actor5_name')
-        map.put(actors,actor1['name'],actor5,compareByKey)
+        map.put(actors,actor5['name'],actor5,compareByKey)
 
 
 def addDirector (catalog, row):
     """
-    Adiciona un autor al map y sus libros
+    Adiciona un director al map y sus peliculas
     """
     #if name:
     directors = catalog['directors']

@@ -175,13 +175,14 @@ while True:
         try:
             catalog
             genre = input("Genero de peliculas : ")
-            data = controller.getMoviesbyGenre(catalog,genre)
+            data = controller.getMoviesbyGenre(catalog, genre)
             if data:
                 avg = lt.getElement(data,1)
                 count = lt.getElement(data,2)
                 print("Voto promedio: ",str(avg)," Peliculas totales: ", str(count),"\n")
             else:
                 print('Genero no encontrado\n') 
+
         except:
             print("\n **ERROR: Cargue primero un archivo**\n")
 

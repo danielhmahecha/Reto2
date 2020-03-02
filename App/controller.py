@@ -57,8 +57,8 @@ def loadMovies (catalog, sep=';'):
     Carga las películas del archivo. 
     """
     t1_start = process_time() #tiempo inicial
-    moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
-    #moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
+    #moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
+    moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(moviesfile, encoding="utf-8-sig") as csvfile:
@@ -80,8 +80,8 @@ def loadDirectors (catalog, sep=';'):
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
-    #castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
+    #castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(castingfile, encoding="utf-8-sig") as csvfile:
@@ -253,21 +253,23 @@ def getMovieInfo(catalog, id):
         return None   
 
 def getMoviesbyGenre(catalog,genre):
+    data = None
     t1_start = process_time()
     genre_ids = model.getGenreInMap(catalog,genre)
-    movies = genre_ids['genreMovies']
-    count = 0
-    sum = 0
-    iterator = it.newIterator(movies)
-    while it.hasNext(iterator):
-        mid = it.next(iterator)
-        movie = getMovieInfo(catalog, mid)
-        count += 1
-        sum += float(movie['vote_average'])
-    data = lt.newList()
-    average = round((sum/count),2)
-    lt.addLast(data,average)
-    lt.addLast(data,count)
+    if genre_ids:
+        movies = genre_ids['genreMovies']
+        count = 0
+        sum = 0
+        iterator = it.newIterator(movies)
+        while it.hasNext(iterator):
+            mid = it.next(iterator)
+            movie = getMovieInfo(catalog, mid)
+            count += 1
+            sum += float(movie['vote_average'])
+        data = lt.newList()
+        average = round((sum/count),2)
+        lt.addLast(data,average)
+        lt.addLast(data,count)
     t1_stop = process_time()
     print ('Tiempo de ejecucion buscar género: ',t1_stop-t1_start," segundos")
     return data 
